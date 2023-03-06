@@ -14,6 +14,13 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
+
+    const found = persons.find(person => person.name ===newName)
+    if(found) {
+      alert(`${newName} is already added to the phonebook`)
+      setNewName('');
+      return
+    }
     const nameObject = {
       name: newName,
     }
@@ -32,9 +39,9 @@ const App = () => {
       <form onSubmit={addName}>
         <div>
           name: <input 
-          value={newName}
-          onChange={handleInputChange}
-        />
+            value={newName}
+            onChange={handleInputChange}
+          />
         </div>
         <div>
           <button type="submit">add</button>
