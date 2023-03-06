@@ -2,44 +2,61 @@ import { useState } from 'react'
 
 const Persons = ({person}) => (
   <>
-    <p>{person.name}</p>
+    <p>{person.name} {person.number}</p>
   </>
 )
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '0400' }
   ]) 
-  const [newName, setNewName] = useState('')
+  const [newName, setNewName] = useState(
+    { name: '', number:'' }
+    )
 
   const addName = (event) => {
     event.preventDefault()
+    console.log(newName)
 
-    const found = persons.find(person => person.name ===newName)
+    const found = persons.find(person => person.name ===newName.name)
     if(found) {
-      alert(`${newName} is already added to the phonebook`)
-      setNewName('');
+      alert(`${newName.name} is already added to the phonebook`)
+      setNewName({
+        name:'', number:''
+      })
       return
     }
     const nameObject = {
-      name: newName,
+      name: newName.name,
+      number: newName.number
     }
     setPersons(persons.concat(nameObject))
-    setNewName('')
+    setNewName({
+      name:'', number:''
+    })
     console.log(nameObject)
   }
+
   const handleInputChange = (event) => {
     console.log(event.target.value)
-    setNewName(event.target.value)
+    setNewName({...newName, [event.target.name]: event.target.value})
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
       <form onSubmit={addName}>
-        <div>
-          name: <input 
-            value={newName}
+        <div>name:
+          <input 
+            name="name"
+            value={newName.name}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>number:
+          <input
+            name="number"
+            value={newName.number}
             onChange={handleInputChange}
           />
         </div>
