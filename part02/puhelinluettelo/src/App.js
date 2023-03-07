@@ -13,7 +13,9 @@ const App = () => {
   ])
   const [newName, setNewName] = useState(
     { name: '', number:'' }
-    )
+  )
+  const [filter, setFilter] = useState()
+
   useEffect(() => {
     axios
       .get('http://localhost:3001/persons')
@@ -45,6 +47,14 @@ const App = () => {
     console.log(nameObject)
   }
 
+  const filtered = filter
+        ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+        : persons
+
+  const filterInput = (event) => {
+    console.log(event.target.value)
+    setFilter(event.target.value)
+  }
   const handleInputChange = (event) => {
     console.log(event.target.value)
     setNewName({...newName, [event.target.name]: event.target.value})
@@ -53,11 +63,11 @@ const App = () => {
   return (
     <div>
       <Header text='Phonebook'/>
-      <Filter />
+      <Filter filter={filter} handle={filterInput}/>
       <Header text='Add new'/>
       <Add addName={addName} newName={newName} handle={handleInputChange}/>
       <Header text='numbers'/>
-      <Persons persons={persons}/>
+      <Persons filtered={filtered}/>
     </div>
   )
 

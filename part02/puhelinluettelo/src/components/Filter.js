@@ -1,7 +1,12 @@
 
 //todo
-const Filter = ({ }) => (
-    <div>filter shown with<input></input>
+const Filter = ({ filter, handle }) => (
+    <div>filter shown with
+        <input 
+            name="filter"
+            value={filter}
+            onChange={handle}
+        />
     </div>
 )
 
