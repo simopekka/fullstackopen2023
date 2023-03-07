@@ -40,11 +40,15 @@ const App = () => {
       name: newName.name,
       number: newName.number
     }
-    setPersons(persons.concat(nameObject))
-    setNewName({
-      name:'', number:''
-    })
     console.log(nameObject)
+    axios
+    .post('http://localhost:3001/persons', nameObject)
+    .then(response => {
+      setPersons(persons.concat(nameObject))
+      setNewName({
+        name:'', number:''
+      })
+    })
   }
 
   const filtered = filter
