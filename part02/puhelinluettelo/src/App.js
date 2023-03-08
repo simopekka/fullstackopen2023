@@ -1,27 +1,26 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import Add from './components/Add'
-import Persons from './components/Persons'
+import Persons from './components/Person'
 import Filter from './components/Filter'
-import axios from 'axios'
+import personService from './services/Persons'
 
 
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: '', number: '' },
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState(
     { name: '', number:'' }
   )
-  const [filter, setFilter] = useState()
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+  const [filter, setFilter] = useState('')
+  
+  useEffect(() =>{
+    personService
+      .getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
+      console.log(persons)
   },[])
 
   const addName = (event) => {
@@ -40,20 +39,27 @@ const App = () => {
       name: newName.name,
       number: newName.number
     }
-    console.log(nameObject)
-    axios
-    .post('http://localhost:3001/persons', nameObject)
-    .then(response => {
-      setPersons(persons.concat(nameObject))
-      setNewName({
-        name:'', number:''
-      })
+    personService
+      .create(nameObject)
+      .then(nameObject => {
+        setPersons(persons.concat(nameObject))
+        setNewName({
+          name:'', number:''
+        })
     })
   }
 
-  const filtered = filter
-        ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
-        : persons
+  const deleteUser = id => {
+    console.log(id)
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`delete ${person.name}?`)){
+      personService
+        .deleteUser(id)
+        .then ( response =>
+          setPersons(persons.filter(person => person.id !== id))
+        )
+    }
+  }
 
   const filterInput = (event) => {
     console.log(event.target.value)
@@ -71,7 +77,7 @@ const App = () => {
       <Header text='Add new'/>
       <Add addName={addName} newName={newName} handle={handleInputChange}/>
       <Header text='numbers'/>
-      <Persons filtered={filtered}/>
+      <Persons persons={persons} filter={filter} deleteUser={deleteUser}/>
     </div>
   )
 
