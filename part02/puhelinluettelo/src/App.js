@@ -28,16 +28,23 @@ const App = () => {
     console.log(newName)
 
     const found = persons.find(person => person.name ===newName.name)
+    
+    const nameObject = {
+      name: newName.name,
+      number: newName.number
+    }
+
     if(found) {
-      alert(`${newName.name} is already added to the phonebook`)
+      if(window.confirm(`${newName.name} is already added to the phonebook, replace the old number with a new one?`))
+        console.log(found.id)
+        personService
+        .update(found.id, nameObject).then(returnedName => {
+          setPersons(persons.map(person => person.id !== found.id ? person : returnedName))
+      })
       setNewName({
         name:'', number:''
       })
       return
-    }
-    const nameObject = {
-      name: newName.name,
-      number: newName.number
     }
     personService
       .create(nameObject)
