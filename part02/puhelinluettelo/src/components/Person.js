@@ -1,5 +1,3 @@
-
-
 const Persons = ({ persons, filter, deleteUser }) => {
 
   const filtered = persons.filter((person) =>

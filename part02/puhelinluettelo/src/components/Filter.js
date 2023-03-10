@@ -1,5 +1,3 @@
-
-//todo
 const Filter = ({ filter, handle }) => (
     <div>filter shown with
         <input 

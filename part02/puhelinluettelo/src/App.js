@@ -4,6 +4,7 @@ import Add from './components/Add'
 import Persons from './components/Person'
 import Filter from './components/Filter'
 import personService from './services/Persons'
+import Notification from './components/Notification'
 
 
 
@@ -13,7 +14,9 @@ const App = () => {
     { name: '', number:'' }
   )
   const [filter, setFilter] = useState('')
-  
+  const [notification, setNotification] = useState(null)
+  const [success, setSuccess] = useState(false)
+
   useEffect(() =>{
     personService
       .getAll()
@@ -38,21 +41,38 @@ const App = () => {
       if(window.confirm(`${newName.name} is already added to the phonebook, replace the old number with a new one?`))
         console.log(found.id)
         personService
-        .update(found.id, nameObject).then(returnedName => {
+        .update(found.id, nameObject)
+        .then(returnedName => {
+          setSuccess(true)
           setPersons(persons.map(person => person.id !== found.id ? person : returnedName))
-      })
-      setNewName({
-        name:'', number:''
-      })
-      return
+          setNotification(`${found.name} was updated!`)
+        })
+        .catch( error => {
+          setSuccess(false)
+          setNotification(
+            `${found.name} was already deleted from server`
+            )
+          })
+        setNewName({
+          name:'', number:''
+        })
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+        return
     }
     personService
       .create(nameObject)
       .then(nameObject => {
         setPersons(persons.concat(nameObject))
+        setSuccess(true)
+        setNotification(`${nameObject.name} was added!`)
         setNewName({
           name:'', number:''
         })
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
     })
   }
 
@@ -62,9 +82,20 @@ const App = () => {
     if (window.confirm(`delete ${person.name}?`)){
       personService
         .deleteUser(id)
-        .then ( response =>
-          setPersons(persons.filter(person => person.id !== id))
+        .then (response =>
+          setSuccess(true),
+          setNotification(`${person.name} was deleted`),
+          setPersons(persons.filter(person => person.id !== id)),
         )
+        .catch( error => {
+          setSuccess(false)
+          setNotification(
+            `${person.name} was already deleted from server`
+          )
+        })
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
     }
   }
 
@@ -80,6 +111,7 @@ const App = () => {
   return (
     <div>
       <Header text='Phonebook'/>
+      <Notification message={notification} success={success}/>
       <Filter filter={filter} handle={filterInput}/>
       <Header text='Add new'/>
       <Add addName={addName} newName={newName} handle={handleInputChange}/>
@@ -87,7 +119,6 @@ const App = () => {
       <Persons persons={persons} filter={filter} deleteUser={deleteUser}/>
     </div>
   )
-
 }
 
 export default App
