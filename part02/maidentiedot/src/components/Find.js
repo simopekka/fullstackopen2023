@@ -1,11 +1,11 @@
+import Country from './Country'
 const Find = ({ countries, input }) => {
     const filtered = countries.filter((country) =>
     country.name.common.toUpperCase().includes(input.toUpperCase()))
-    console.log(filtered)
 
     if (!input)
         return
-    if (filtered.length < 10) {
+    if (filtered.length < 10 && filtered.length > 1) {
         return(
             <>
                 {filtered.map(country => 
@@ -13,9 +13,13 @@ const Find = ({ countries, input }) => {
                 )}
             </>
         )
-    } else {
+    } else if (filtered.length === 1){
         return (
-        <p>Too many matches, specify another filter</p>
+            <Country country={filtered[0]} />
+        )
+    } else if (filtered.length > 10){
+        return (
+            <p>Too many matches, specify another filter</p>
         )
     }
 }
