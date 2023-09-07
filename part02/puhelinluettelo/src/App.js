@@ -38,7 +38,7 @@ const App = () => {
     }
 
     if(found) {
-      if(window.confirm(`${newName.name} is already added to the phonebook, replace the old number with a new one?`))
+      if(window.confirm(`${newName.name} is already added to the phonebook, replace the old number with a new one?`)) {
         console.log(found.id)
         personService
         .update(found.id, nameObject)
@@ -47,11 +47,10 @@ const App = () => {
           setPersons(persons.map(person => person.id !== found.id ? person : returnedName))
           setNotification(`${found.name} was updated!`)
         })
-        .catch( error => {
+        .catch(error => {
           setSuccess(false)
-          setNotification(
-            `${found.name} was already deleted from server`
-            )
+          setNotification(error.response.data.error)
+          console.log(error.response.data)
           })
         setNewName({
           name:'', number:''
@@ -60,6 +59,7 @@ const App = () => {
           setNotification(null)
         }, 5000)
         return
+      }
     }
     personService
       .create(nameObject)
@@ -67,13 +67,18 @@ const App = () => {
         setPersons(persons.concat(nameObject))
         setSuccess(true)
         setNotification(`${nameObject.name} was added!`)
-        setNewName({
-          name:'', number:''
-        })
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-    })
+      })
+      .catch(error => {
+        setSuccess(false)
+        setNotification(error.response.data.error)
+        console.log(error.response.data)
+      })
+      setNewName({
+        name:'', number:''
+      })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
   }
 
   const deleteUser = id => {
@@ -87,11 +92,10 @@ const App = () => {
           setNotification(`${person.name} was deleted`),
           setPersons(persons.filter(person => person.id !== id)),
         )
-        .catch( error => {
+        .catch(error => {
           setSuccess(false)
-          setNotification(
-            `${person.name} was already deleted from server`
-          )
+          console.log(error.response.data)
+          setNotification(error.response.data.error)
         })
         setTimeout(() => {
           setNotification(null)
